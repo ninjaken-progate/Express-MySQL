@@ -2,7 +2,7 @@ const User = require("../models/user");
 
 class UserController {
   // menambahkan satu user baru
-  static async createUser(req, res) {
+  static async createUser(req, res, next) {
     // mengambil value "name" dan "nationality" dari req.body
     const { name, nationality } = req.body;
 
@@ -15,22 +15,22 @@ class UserController {
         nationality,
       });
     } catch (err) {
-      throw err;
+      next(err);
     }
   }
 
   // mengambil semua data user
-  static async getUsers(req, res) {
+  static async getUsers(req, res, next) {
     try {
       const users = await User.find(req.con);
       res.status(200).json(users);
     } catch (err) {
-      throw err;
+      next(err);
     }
   }
 
   // mengambil satu user tertentu
-  static async getUserById(req, res) {
+  static async getUserById(req, res, next) {
     // mengambil value "id"
     const { id } = req.params;
 
@@ -44,12 +44,12 @@ class UserController {
         res.status(200).json(user);
       }
     } catch (err) {
-      throw err;
+      next(err);
     }
   }
 
   // mengupdate sebuah user
-  static async updateUser(req, res) {
+  static async updateUser(req, res, next) {
     // mengambil value "id"
     const { id } = req.params;
 
@@ -69,12 +69,12 @@ class UserController {
         });
       }
     } catch (err) {
-      throw err;
+      next(err);
     }
   }
 
   // mengupdate sebuah user
-  static async deleteUser(req, res) {
+  static async deleteUser(req, res, next) {
     // mengambil value "id"
     const { id } = req.params;
 
@@ -87,7 +87,7 @@ class UserController {
         res.status(200).json(`User id ${id} is deleted!`);
       }
     } catch (err) {
-      throw err;
+      next(err);
     }
   }
 }
