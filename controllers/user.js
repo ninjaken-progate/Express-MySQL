@@ -1,105 +1,94 @@
-// variable untuk menyimpan data user
-const users = [
-  {
-    id: 1,
-    name: "Ninja Ken",
-    nationality: "Japan",
-    isDeleted: false,
-  },
-];
+const User = require("../models/user");
 
 class UserController {
   // menambahkan satu user baru
-  static createUser(req, res) {
+  static async createUser(req, res) {
     // mengambil value "name" dan "nationality" dari req.body
     const { name, nationality } = req.body;
 
-    // menyimpan data "user"
-    const currentId = users.length + 1;
-    const user = {
-      id: currentId,
-      name: name,
-      nationality: nationality,
-      isDeleted: false,
-    };
+    try {
+      const result = await User.create(req.con, { name, nationality });
 
-    // menambahkan data "user" ke dalam variable "users"
-    users.push(user);
-
-    // me-return "user" yang baru ditambahkan
-    res.status(200).json(user);
+      res.status(200).json({
+        id: result.insertId,
+        name,
+        nationality,
+      });
+    } catch (err) {
+      throw err;
+    }
   }
 
   // mengambil semua data user
-  static getUsers(req, res) {
-    // memfilter user dengan isDeleted = false
-    const foundUsers = users.filter((user) => !user.isDeleted);
-
-    // me-return "users" dengan isDeleted = false
-    res.status(200).json(foundUsers);
+  static async getUsers(req, res) {
+    try {
+      const users = await User.find(req.con);
+      res.status(200).json(users);
+    } catch (err) {
+      throw err;
+    }
   }
 
   // mengambil satu user tertentu
-  static getUserById(req, res) {
+  static async getUserById(req, res) {
     // mengambil value "id"
     const { id } = req.params;
 
-    // mengambil index "user" di variable "users"
-    const index = id - 1;
-    const user = users[index];
+    try {
+      const result = await User.findOne(req.con, id);
+      const user = result[0];
 
-    // mengecek apakan user tidak ada atau sudah dihapus
-    if (!user || user.isDeleted) {
-      res.status(404).json("User not found!");
-    } else {
-      res.status(200).json(user);
+      if (!user) {
+        res.status(404).json(`User id ${id} not found!`);
+      } else {
+        res.status(200).json(user);
+      }
+    } catch (err) {
+      throw err;
     }
   }
 
   // mengupdate sebuah user
-  static updateUser(req, res) {
+  static async updateUser(req, res) {
     // mengambil value "id"
     const { id } = req.params;
 
     // mengambil value "name" dan "nationality" dari req.body
     const { name, nationality } = req.body;
 
-    // mengambil index "user" di variable "users"
-    const index = id - 1;
-    const user = users[index];
+    try {
+      const result = await User.update(req.con, id, { name, nationality });
 
-    // mengecek apakan user tidak ada atau sudah dihapus
-    if (!user || user.isDeleted) {
-      res.status(404).json("User not found!");
+      if (!result.affectedRows) {
+        res.status(404).json(`User id ${id} not found!`);
+      } else {
+        res.status(200).json({
+          id,
+          name,
+          nationality,
+        });
+      }
+    } catch (err) {
+      throw err;
     }
-
-    // mengupdate data user
-    user.name = name;
-    user.nationality = nationality;
-
-    // me-return "user" yang diupdate
-    res.status(200).json(users[index]);
   }
 
   // mengupdate sebuah user
-  static deleteUser(req, res) {
+  static async deleteUser(req, res) {
     // mengambil value "id"
     const { id } = req.params;
 
-    // mengambil index "user" di variable "users"
-    const index = id - 1;
-    const user = users[index];
+    try {
+      const result = await User.delete(req.con, id);
 
-    // mengecek apakan user tidak ada atau sudah dihapus
-    if (!user || user.isDeleted) {
-      res.status(404).json("User not found!");
+      if (!result.affectedRows) {
+        res.status(404).json(`User id ${id} not found!`);
+      } else {
+        res.status(200).json(`User id ${id} is deleted!`);
+      }
+    } catch (err) {
+      throw err;
     }
-
-    // menghapus data user dari variable "users"
-    user.isDeleted = true;
-
-    // me-return "user" yang diupdate
-    res.status(200).json(`User id ${id} is deleted!`);
   }
 }
 
