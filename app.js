@@ -31,6 +31,13 @@ app.use(express.urlencoded());
 
 app.use("/user", userRouter);
 
+// error handler
+app.use((err, req, res, next) => {
+  console.log(err);
+  const message = err.sqlMessage || "Something broke!";
+  res.status(500).send(message);
+});
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });

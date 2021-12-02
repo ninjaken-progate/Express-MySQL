@@ -40,9 +40,9 @@ class UserController {
 
       if (!user) {
         res.status(404).json(`User id ${id} not found!`);
-      } else {
-        res.status(200).json(user);
       }
+
+      res.status(200).json(user);
     } catch (err) {
       next(err);
     }
@@ -61,13 +61,13 @@ class UserController {
 
       if (!result.affectedRows) {
         res.status(404).json(`User id ${id} not found!`);
-      } else {
-        res.status(200).json({
-          id,
-          name,
-          nationality,
-        });
       }
+
+      res.status(200).json({
+        id,
+        name,
+        nationality,
+      });
     } catch (err) {
       next(err);
     }
@@ -83,9 +83,9 @@ class UserController {
 
       if (!result.affectedRows) {
         res.status(404).json(`User id ${id} not found!`);
-      } else {
-        res.status(200).json(`User id ${id} is deleted!`);
       }
+
+      res.status(200).json(`User id ${id} is deleted!`);
     } catch (err) {
       next(err);
     }
